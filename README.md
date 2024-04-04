@@ -12,48 +12,6 @@ The first step of the preprocessing is to normalize the `JSON` files and convert
 
 In addition many properties are discarded during the process.
 
-This is the *E/R* schema of the dataset:
-
-```mermaid
-erDiagram
-    Track {
-        string uri PK
-        string name
-        int duration
-        string artist_uri FK
-        string album_uri
-        string album_name
-    }
-    Playlist {
-        int pid PK
-        string name
-        int num_followers
-    }
-    Track_in_Playlist {
-        int pid PK, FK
-        string track_uri PK, FK
-        int pos PK
-    }
-    Artist {
-        string uri PK
-        string name
-    }
-
-    Album {
-        string uri PK
-        string name
-        string type
-        string artist_uri
-        string available_markets
-        int release_year
-        int total_tracks 
-    }
-
-    Track only one to zero or more Track_in_Playlist : in
-    Playlist only one to zero or more Track_in_Playlist : in
-    Track zero or more to only one Artist : write
-```
-
 ### Data Augmentation
 
 The initial dataset has been augmented by relying on the `Spotify Web API`. In particular:
@@ -106,6 +64,68 @@ Given the fact that some `Spotify URI` have changed during the time since when t
 - **Artist**: `~27M`
 - **Album**: `~289M`
 - **Features**: `~214M`
+
+```mermaid
+erDiagram
+    Track {
+        string uri PK
+        string name
+        int duration
+        boolean explicit
+        Array[string] artists FK "List of artists FKs, separeted by |"
+        Array[string] available_markets "List of Market, separeted by |"
+        string album_uri FK
+        int popularity
+    }
+    Playlist {
+        int pid PK
+        string name
+        int num_followers
+    }
+    Track_in_Playlist {
+        int pid PK, FK
+        string track_uri PK, FK
+        int pos PK
+    }
+    Artist {
+        string uri PK
+        string name
+        int followers
+        Array[string] genres "List of Genres, separeted by |"
+        int popularity
+    }
+    Album {
+        string uri PK
+        string name
+        string type "album, compilation, single"
+        Array[string] artists FK "List of artists FKs, separeted by |"
+        Array[string] available_markets "List of Market, separeted by |"
+        int release_year
+        int total_tracks 
+    }
+    Feature {
+        string uri PK, FK
+        int key
+        float loudness
+        float tempo
+        boolean mode
+        float danceability
+        float valence
+        float instrumentalness
+        float liveness
+        float acousticness
+        float energy
+        float speechiness
+    }
+
+    Track only one to zero or more Track_in_Playlist : in
+    Track zero or more to only one Album : belongs
+    Track zero or more to one or more Artist : write
+    Track only one to zero or one Feature: contains
+    Track only one to zero or more Track_in_Playlist : in
+    Playlist only one to zero or more Track_in_Playlist : in
+    Album zero or more to one or more Artist: compose
+```
 
 ## Exploratory queries
 
