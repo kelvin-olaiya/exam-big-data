@@ -126,11 +126,3 @@ erDiagram
     Playlist only one to zero or more Track_in_Playlist : in
     Album zero or more to one or more Artist: compose
 ```
-
-## Exploratory queries
-
-## Main Jobs
-
-### Manuel Andruccioli
-
-### Kelvin Olaiya
